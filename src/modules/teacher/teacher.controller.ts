@@ -17,6 +17,7 @@ import {
 import { TeacherService } from './teacher.service';
 import { RegisterDto } from '@/dtos/register.dto';
 import { CommonStudentsDto } from '@/dtos/commonStudents.dto';
+import { SuspendDto } from '@/dtos/suspend.dto';
 
 @ApiTags('Teacher')
 @Controller('api')
@@ -57,5 +58,16 @@ export class TeacherController {
   ): Promise<{ students: string | string[] }> {
     const students = await this.regService.findCommon(query.teacher);
     return { students };
+  }
+
+  @Post('suspend')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Suspend a specified student' })
+  @ApiBody({ type: SuspendDto })
+  @ApiResponse({ status: 204, description: 'Student suspended successfully' })
+  @ApiResponse({ status: 400, description: 'Validation error' })
+  @ApiResponse({ status: 404, description: 'Student not found' })
+  async suspend(@Body() dto: SuspendDto): Promise<void> {
+    await this.regService.suspendStudent(dto.student);
   }
 }

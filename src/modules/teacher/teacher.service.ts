@@ -79,4 +79,17 @@ export class TeacherService {
 
     return commonEmails;
   }
+
+  async suspendStudent(studentEmail: string): Promise<void> {
+    const student = await this.studentRepo.findOne({
+      where: { email: studentEmail },
+    });
+    if (!student) {
+      throw new NotFoundException(
+        `Student with email "${studentEmail}" not found`,
+      );
+    }
+    student.suspended = true;
+    await this.studentRepo.save(student);
+  }
 }
