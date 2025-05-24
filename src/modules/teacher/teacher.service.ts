@@ -92,4 +92,46 @@ export class TeacherService {
     student.suspended = true;
     await this.studentRepo.save(student);
   }
+
+  async retrieveForNotifications(
+    teacherEmail: string,
+    notification: string,
+  ): Promise<string[]> {
+    const teacher = await this.teacherRepo.findOne({
+      where: { email: teacherEmail },
+      relations: ['students'],
+    });
+    if (!teacher) {
+      throw new NotFoundException(`Teacher "${teacherEmail}" not found`);
+    }
+
+    const registeredEmails = teacher.students
+      .filter((s) => !s.suspended)
+      .map((s) => s.email);
+
+    const mentionedEmails = new Set<string>();
+    const regex = /@([\w.+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/g;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(notification))) {
+      mentionedEmails.add(match[1]);
+    }
+
+    let validMentioned: string[] = [];
+    if (mentionedEmails.size > 0) {
+      const rows = await this.studentRepo.find({
+        where: {
+          email: In(Array.from(mentionedEmails)),
+          suspended: false,
+        },
+      });
+      validMentioned = rows.map((s) => s.email);
+    }
+
+    const recipientsSet = new Set<string>(registeredEmails);
+    for (const e of validMentioned) {
+      recipientsSet.add(e);
+    }
+
+    return Array.from(recipientsSet);
+  }
 }
