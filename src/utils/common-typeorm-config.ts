@@ -1,3 +1,6 @@
+import { Registration } from '@/databases/entities/registration.entity';
+import { Student } from '@/databases/entities/student.entity';
+import { Teacher } from '@/databases/entities/teacher.entity';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
@@ -26,7 +29,7 @@ export const db_config: TypeOrmModuleOptions & MysqlConnectionOptions = {
     ],
   },
   logging: ['error'],
-  entities: [], // this is general, later will be override by each services entities
+  entities: [Teacher, Student, Registration], // this is general, later will be override by each services entities
   migrations: [], // this is general, later will be override by each services migrations
   namingStrategy: new SnakeNamingStrategy(),
   autoLoadEntities: true, //This will help auto populate entities from path like **/*.entity{.ts,.js}

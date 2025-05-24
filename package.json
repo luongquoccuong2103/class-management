@@ -22,7 +22,8 @@
     "docker-stop": "docker compose down",
     "typeorm-migration": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "db-migration-gen": "npm run typeorm-migration -- -d typeorm-config.ts migration:generate src/databases/entities/migrations/migrations",
-    "db-migration-run": "npm run typeorm-migration -- -d typeorm-config.ts migration:run"
+    "db-migration-run": "npm run typeorm-migration -- -d typeorm-config.ts migration:run",
+    "seed:all": "ts-node -r tsconfig-paths/register src/databases/seeders/index.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
