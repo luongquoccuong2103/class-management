@@ -1,0 +1,52 @@
+import { Registration } from '@/databases/entities/registration.entity';
+import { Student } from '@/databases/entities/student.entity';
+import { Teacher } from '@/databases/entities/teacher.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+@Injectable()
+export class RegistrationService {
+  constructor(
+    @InjectRepository(Teacher) private teacherRepo: Repository<Teacher>,
+    @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(Registration) private regRepo: Repository<Registration>,
+  ) {}
+
+  async register(teacherEmail: string, studentEmails: string[]): Promise<void> {
+    // 1. Upsert teacher
+    const teacher = await this.teacherRepo.findOne({
+      where: { email: teacherEmail },
+    });
+    if (!teacher) {
+      throw new NotFoundException(
+        `Teacher with email "${teacherEmail}" not found`,
+      );
+    }
+
+    // 2. Upsert students
+    const students: Student[] = [];
+    for (const email of studentEmails) {
+      let student = await this.studentRepo.findOne({ where: { email } });
+      if (!student) {
+        student = this.studentRepo.create({ email, suspended: false });
+        student = await this.studentRepo.save(student);
+      }
+      students.push(student);
+    }
+
+    // 3. Insert into registrations if not exists
+    for (const student of students) {
+      const exists = await this.regRepo.findOne({
+        where: { teacherId: teacher.id, studentId: student.id },
+      });
+      if (!exists) {
+        const reg = this.regRepo.create({
+          teacherId: teacher.id,
+          studentId: student.id,
+        });
+        await this.regRepo.save(reg);
+      }
+    }
+  }
+}
