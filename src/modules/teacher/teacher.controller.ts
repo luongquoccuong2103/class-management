@@ -1,7 +1,22 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Get,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { TeacherService } from './teacher.service';
 import { RegisterDto } from '@/dtos/register.dto';
+import { CommonStudentsDto } from '@/dtos/commonStudents.dto';
 
 @ApiTags('Teacher')
 @Controller('api')
@@ -15,5 +30,32 @@ export class TeacherController {
   @ApiResponse({ status: 204, description: 'Success Request' })
   async register(@Body() dto: RegisterDto): Promise<void> {
     await this.regService.register(dto.teacher, dto.students);
+  }
+
+  @Get('commonstudents')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Retrieve students common to all given teachers' })
+  @ApiQuery({
+    name: 'teacher',
+    description: 'Email(s) of teacher(s)',
+    required: true,
+    isArray: true,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of common students',
+    schema: {
+      example: {
+        students: ['commonstudent1@gmail.com', 'commonstudent2@gmail.com'],
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Validation error' })
+  async commonStudents(
+    @Query() query: CommonStudentsDto,
+  ): Promise<{ students: string | string[] }> {
+    const students = await this.regService.findCommon(query.teacher);
+    return { students };
   }
 }
