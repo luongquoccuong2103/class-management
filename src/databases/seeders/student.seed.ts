@@ -1,30 +1,30 @@
-// src/databases/seeders/teacher.seed.ts
+// src/databases/seeders/student.seed.ts
 import { connectionSource } from '@/utils/common-typeorm-config';
-import { Teacher } from '../entities/teacher.entity';
+import { Student } from '../entities/student.entity';
 
-export async function seedTeachers() {
+export async function seedStudents() {
   if (!connectionSource.isInitialized) {
     await connectionSource.initialize();
   }
-  const repo = connectionSource.getRepository(Teacher);
+  const repo = connectionSource.getRepository(Student);
 
-  const teachers = [
-    { email: 'teacher1@example.com' },
-    { email: 'teacher2@example.com' },
-    { email: 'teacherken@gmail.com' },
+  const students = [
+    { email: 'commonstudent1@gmail.com' },
+    { email: 'commonstudent2@gmail.com' },
+    { email: 'studentonly@example.com' },
   ];
 
-  for (const t of teachers) {
-    const entity = repo.create(t);
+  for (const s of students) {
+    const entity = repo.create(s);
     await repo.save(entity);
   }
 
-  console.log(`✔ Inserted ${teachers.length} teachers`);
+  console.log(`✔ Inserted ${students.length} students`);
   await connectionSource.destroy();
 }
 
 if (require.main === module) {
-  seedTeachers().catch((err) => {
+  seedStudents().catch((err) => {
     console.error(err);
     process.exit(1);
   });
