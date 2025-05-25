@@ -9,6 +9,9 @@ export class CommonStudentsDto {
     example: ['teacherken@gmail.com', 'teacherjoe@gmail.com'],
     type: [String],
   })
-  @IsEmail({}, { each: true })
-  teacher: string | string[];
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray({ message: 'teacher query parameter must be an array' })
+  @ArrayNotEmpty({ message: 'At least one teacher email is required' })
+  @IsEmail({}, { each: true, message: 'Each teacher email must be valid' })
+  teacher: string[];
 }

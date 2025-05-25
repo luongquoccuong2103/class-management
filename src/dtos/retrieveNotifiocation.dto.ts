@@ -3,13 +3,13 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class RetrieveNotificationDto {
   @ApiProperty({ example: 'teacherken@gmail.com' })
-  @IsEmail()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Missing teacher email field' })
+  @IsEmail({}, { message: 'Invalid teacher email format' })
   teacher: string;
 
   @ApiProperty({
-    example: 'Hello students! @studentagnes@gmail.com @studentmiche@gmail.com',
+    example: 'Hello @studentagnes@gmail.com',
   })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Missing notification text' })
   notification: string;
 }

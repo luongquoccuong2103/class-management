@@ -2,8 +2,24 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from '@/utils/interceptors/response.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      stopAtFirstError: false,
+      exceptionFactory: (errors) => {
+        const messages = errors
+          .map((err) => Object.values(err.constraints || {}))
+          .flat();
+        throw new BadRequestException(messages);
+      },
+    }),
+  );
+
   const moduleRef = app.select(AppModule);
   const reflector = moduleRef.get(Reflector);
 

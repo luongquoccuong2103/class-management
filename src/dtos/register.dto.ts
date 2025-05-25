@@ -10,17 +10,17 @@ import {
 
 export class RegisterDto {
   @ApiProperty({ example: 'teacherken@gmail.com' })
-  @IsEmail()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Missing teacher email field' })
+  @IsEmail({}, { message: 'Invalid teacher email format' })
   teacher: string;
 
   @ApiProperty({
     example: ['studentjon@gmail.com', 'studenthon@gmail.com'],
     isArray: true,
   })
-  @IsArray()
-  @ArrayNotEmpty()
-  @ArrayUnique()
-  @IsEmail({}, { each: true })
+  @IsArray({ message: 'Students must be an array of email strings' })
+  @ArrayNotEmpty({ message: 'Students array cannot be empty' })
+  @ArrayUnique({ message: 'Duplicate emails found in students list' })
+  @IsEmail({}, { each: true, message: 'Each student must have a valid email' })
   students: string[];
 }

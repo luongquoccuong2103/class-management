@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class SuspendDto {
   @ApiProperty({ example: 'studentmary@gmail.com' })
-  @IsEmail()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Missing student email field' })
+  @IsEmail({}, { message: 'Invalid student email format' })
   student: string;
 }
