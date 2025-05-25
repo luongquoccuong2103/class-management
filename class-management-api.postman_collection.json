@@ -1,0 +1,123 @@
+{
+	"info": {
+		"_postman_id": "b8e3f3a0-5f1d-4f1c-9e1d-8f2f3a0b5f1d",
+		"name": "Class Management API",
+		"description": "A collection of APIs for managing teacher-student relationships in a school system.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Register Students",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"teacher\": \"teacherken@gmail.com\",\n    \"students\": [\n        \"studentjon@gmail.com\",\n        \"studenthon@gmail.com\"\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/register",
+					"host": ["{{base_url}}"],
+					"path": ["api", "register"]
+				},
+				"description": "Register one or more students to a specified teacher.\n\nExpected Response:\n- Status: 204 No Content (Success)\n- Status: 400 Bad Request (Invalid input)\n\nValidation Rules:\n- Teacher email must be valid\n- Student emails must be valid\n- Duplicate registrations are ignored"
+			}
+		},
+		{
+			"name": "2. Get Common Students",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/commonstudents?teacher=teacherken%40gmail.com&teacher=teacherjoe%40gmail.com",
+					"host": ["{{base_url}}"],
+					"path": ["api", "commonstudents"],
+					"query": [
+						{
+							"key": "teacher",
+							"value": "teacherken%40gmail.com"
+						},
+						{
+							"key": "teacher",
+							"value": "teacherjoe%40gmail.com"
+						}
+					]
+				},
+				"description": "Retrieve students who are registered to ALL of the specified teachers.\n\nExpected Response:\n- Status: 200 OK\n{\n    \"students\": [\"commonstudent1@gmail.com\"]\n}\n\nValidation Rules:\n- At least one teacher must be specified\n- Teacher emails must be valid"
+			}
+		},
+		{
+			"name": "3. Suspend Student",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"student\": \"studentmary@gmail.com\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/suspend",
+					"host": ["{{base_url}}"],
+					"path": ["api", "suspend"]
+				},
+				"description": "Suspend a specified student.\n\nExpected Response:\n- Status: 204 No Content (Success)\n- Status: 400 Bad Request (Invalid input)\n\nValidation Rules:\n- Student email must be valid\n- Student must exist in the system"
+			}
+		},
+		{
+			"name": "4. Retrieve Notifications",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"teacher\": \"teacherken@gmail.com\",\n    \"notification\": \"Hello students! @studentagnes@gmail.com @studentmiche@gmail.com\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/retrievefornotifications",
+					"host": ["{{base_url}}"],
+					"path": ["api", "retrievefornotifications"]
+				},
+				"description": "Retrieve a list of students who can receive a notification.\n\nExpected Response:\n- Status: 200 OK\n{\n    \"recipients\": [\"studentagnes@gmail.com\", \"studentmiche@gmail.com\"]\n}\n\nValidation Rules:\n- Teacher email must be valid\n- Notification text must be provided\n- Suspended students are excluded\n- Recipients include:\n  * Mentioned students (using @ mentions)\n  * Students registered to the teacher"
+			}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [""]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [""]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string",
+			"description": "Base URL for the API"
+		}
+	]
+} 

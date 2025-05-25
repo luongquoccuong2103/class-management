@@ -154,6 +154,108 @@ npm run test:watch
 npm run test:e2e
 ```
 
+## Testing with Postman
+
+A Postman collection has been provided to help test the API endpoints. To use it:
+
+1. Import the `class-management-api.postman_collection.json` file into Postman
+2. The collection uses a variable `{{base_url}}` which is set to `http://localhost:3000` by default
+3. Make sure your API server is running before testing
+4. The collection includes all 4 API endpoints with example requests and documentation:
+   - Register Students (`POST /api/register`)
+   - Get Common Students (`GET /api/commonstudents`)
+   - Suspend Student (`POST /api/suspend`)
+   - Retrieve Notifications (`POST /api/retrievefornotifications`)
+
+Each endpoint in the collection includes:
+- Example request body (where applicable)
+- Description of the endpoint's purpose
+- Expected responses
+- Validation rules
+
+### API Endpoints Documentation
+
+#### 1. Register Students
+- **Method**: POST
+- **Endpoint**: `/api/register`
+- **Purpose**: Register one or more students to a specified teacher
+- **Request Body**:
+  ```json
+  {
+    "teacher": "teacherken@gmail.com",
+    "students": [
+      "studentjon@gmail.com",
+      "studenthon@gmail.com"
+    ]
+  }
+  ```
+- **Response**: 204 No Content (Success)
+
+#### 2. Get Common Students
+- **Method**: GET
+- **Endpoint**: `/api/commonstudents`
+- **Purpose**: Retrieve students who are registered to ALL specified teachers
+- **Query Parameters**: `teacher` (can be specified multiple times)
+- **Example**: `/api/commonstudents?teacher=teacherken@gmail.com&teacher=teacherjoe@gmail.com`
+- **Response**:
+  ```json
+  {
+    "students": [
+      "commonstudent1@gmail.com",
+      "commonstudent2@gmail.com"
+    ]
+  }
+  ```
+
+#### 3. Suspend Student
+- **Method**: POST
+- **Endpoint**: `/api/suspend`
+- **Purpose**: Suspend a specified student
+- **Request Body**:
+  ```json
+  {
+    "student": "studentmary@gmail.com"
+  }
+  ```
+- **Response**: 204 No Content (Success)
+
+#### 4. Retrieve Notifications
+- **Method**: POST
+- **Endpoint**: `/api/retrievefornotifications`
+- **Purpose**: Get a list of students who can receive a notification
+- **Request Body**:
+  ```json
+  {
+    "teacher": "teacherken@gmail.com",
+    "notification": "Hello students! @studentagnes@gmail.com @studentmiche@gmail.com"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "recipients": [
+      "studentagnes@gmail.com",
+      "studentmiche@gmail.com",
+      "studentjon@gmail.com"
+    ]
+  }
+  ```
+
+### Error Responses
+
+All endpoints may return the following error responses:
+
+- **400 Bad Request**: When the input data is invalid
+- **404 Not Found**: When a referenced teacher or student doesn't exist
+- **500 Internal Server Error**: For unexpected server errors
+
+Each error response includes a message explaining the error:
+```json
+{
+  "message": "Error description here"
+}
+```
+
 ## Project Structure
 
 ```
